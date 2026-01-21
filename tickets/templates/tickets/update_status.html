@@ -1,0 +1,30 @@
+<!-- templates/tickets/update_status.html -->
+<h2>Update Ticket Status: {{ ticket.title }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div>
+        <label>Current Status:</label>
+        <strong>{{ ticket.get_status_display }}</strong>
+    </div>
+    
+    <br>
+    
+    <div>
+        <label>New Status:</label>
+        {{ form.status }}
+    </div>
+    
+    <br>
+    
+    <div>
+        <label>Resolution Notes:</label>
+        {{ form.resolution_notes }}
+    </div>
+    
+    <br>
+    
+    <button type="submit">Update Status</button>
+    <a href="{% url 'ticket_detail' ticket.id %}">Cancel</a>
+</form>

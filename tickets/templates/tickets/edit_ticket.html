@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* Background */
+.content {
+    background: linear-gradient(135deg, #ff7b21 0%, #0f3d63 100%);
+    min-height: 92vh;
+    padding: 45px;
+}
+
+/* Card */
+.edit-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 22px;
+    padding: 40px 45px;
+    max-width: 850px;
+    margin: auto;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Title */
+.edit-title {
+    color: white;
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+/* Labels */
+.edit-card label {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Inputs */
+.edit-card input,
+.edit-card select,
+.edit-card textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    margin-bottom: 20px;
+    font-size: 15px;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.25);
+}
+
+.edit-card textarea {
+    height: 130px;
+    resize: vertical;
+}
+
+/* Save button */
+.save-btn {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: white;
+    padding: 14px 26px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.23s ease;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+}
+
+/* Slide animation */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+
+<div class="edit-card">
+
+    <div class="edit-title">Edit Ticket</div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Subject</label>
+        <input type="text" name="subject" value="{{ ticket.subject }}" required>
+
+        <label>Description</label>
+        <textarea name="description" required>{{ ticket.description }}</textarea>
+
+        <label>Priority</label>
+        <select name="priority" required>
+            <option value="Low" {% if ticket.priority == "Low" %}selected{% endif %}>Low</option>
+            <option value="Medium" {% if ticket.priority == "Medium" %}selected{% endif %}>Medium</option>
+            <option value="High" {% if ticket.priority == "High" %}selected{% endif %}>High</option>
+            <option value="Urgent" {% if ticket.priority == "Urgent" %}selected{% endif %}>Urgent</option>
+        </select>
+
+        <label>Status</label>
+        <select name="status" required>
+            <option value="Open" {% if ticket.status == "Open" %}selected{% endif %}>Open</option>
+            <option value="In Progress" {% if ticket.status == "In Progress" %}selected{% endif %}>In Progress</option>
+            <option value="Resolved" {% if ticket.status == "Resolved" %}selected{% endif %}>Resolved</option>
+            <option value="Closed" {% if ticket.status == "Closed" %}selected{% endif %}>Closed</option>
+        </select>
+
+        <label>Assigned Technician</label>
+        <select name="assigned_to">
+            <option value="">Unassigned</option>
+            {% for tech in technicians %}
+                <option value="{{ tech.id }}" {% if ticket.assigned_to and ticket.assigned_to.id == tech.id %}selected{% endif %}>
+                    {{ tech.username }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="save-btn">Save Changes</button>
+
+    </form>
+
+</div>
+
+{% endblock %}

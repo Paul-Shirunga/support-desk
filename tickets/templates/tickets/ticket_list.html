@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block sidebar %}
+<div class="sidebar">
+    <a href="{% url 'technicians' %}">
+        <i class="bi bi-people"></i> Technicians
+    </a>
+    <a href="{% url 'tickets:ticket_list' %}">
+        <i class="bi bi-list-task"></i> Queues
+    </a>
+    <a href="#"><i class="bi bi-person-lines-fill"></i> My Tickets</a>
+    <a href="#"><i class="bi bi-ticket-detailed"></i> Service Requests</a>
+    <a href="#"><i class="bi bi-exclamation-triangle"></i> Incidents</a>
+
+    <div class="sidebar-stats">
+        <div class="stat-card open">
+            <span><i class="bi bi-inbox-fill"></i> Open</span>
+            <span>{{ open_count|default:"0" }}</span>
+        </div>
+
+        <div class="stat-card investigation">
+            <span><i class="bi bi-search"></i> Under Investigation</span>
+            <span>{{ investigation_count|default:"0" }}</span>
+        </div>
+
+        <div class="stat-card on-hold">
+            <span><i class="bi bi-pause-circle"></i> On Hold</span>
+            <span>{{ on_hold_count|default:"0" }}</span>
+        </div>
+
+        <div class="stat-card in-progress">
+            <span><i class="bi bi-arrow-repeat"></i> In Progress</span>
+            <span>{{ in_progress_count|default:"0" }}</span>
+        </div>
+
+        <div class="stat-card closed">
+            <span><i class="bi bi-check-circle-fill"></i> Closed</span>
+            <span>{{ closed_count|default:"0" }}</span>
+        </div>
+    </div>
+</div>
+{% endblock sidebar %}
+
+{% block content %}
+
+<style>
+table { width: 100%; border-collapse: collapse; }
+
+.content {
+    background: linear-gradient(90deg, #ff7a1c, #004b8d);
+    min-height: 91vh;
+    padding: 40px;
+}
+
+.page-container {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 35px;
+    max-width: 1500px;
+    margin: auto;
+}
+
+.page-title {
+    font-size: 34px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 25px;
+}
+
+.data-table th {
+    background: rgba(0,45,95,.95);
+    color: #fff;
+    padding: 14px;
+}
+
+.data-table td {
+    padding: 14px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+/* STATUS BADGES */
+.status-select {
+    appearance: none;
+    padding: 6px 30px 6px 14px;
+    border-radius: 20px;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    color: #fff;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-image: url("data:image/svg+xml,%3Csvg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+}
+
+.status-open { background:#2563eb; }
+.status-under_investigation { background:#7c3aed; }
+.status-on_hold { background:#f59e0b; }
+.status-in_progress { background:#0ea5e9; }
+.status-closed { background:#16a34a; }
+
+.status-select option {
+    background: #0b2f5b;
+    color: #fff;
+}
+</style>
+
+<div class="page-container">
+    <div class="page-title">All Tickets</div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Logged By</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Resolution</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for ticket in tickets %}
+            <tr>
+                <td>#{{ ticket.id }}</td>
+
+                <td>
+                    <a href="{% url 'tickets:ticket_detail' ticket.id %}" style="color:#fff;">
+                        {{ ticket.title }}
+                    </a>
+                </td>
+
+                <!-- LOGGED BY (OUTLOOK-LIKE SAFE VERSION) -->
+                <td>
+                    {% if ticket.created_by %}
+                        {% if ticket.created_by.first_name or ticket.created_by.last_name %}
+                            {{ ticket.created_by.first_name }} {{ ticket.created_by.last_name }}
+                        {% else %}
+                            {{ ticket.created_by.username|title }}
+                        {% endif %}
+                    {% elif ticket.sender %}
+                        {{ ticket.sender|cut:"@insurezone.onmicrosoft.com"|cut:"@insurancezone.co.za"|title }}
+                    {% else %}
+                        System
+                    {% endif %}
+                </td>
+
+                <td>{{ ticket.get_priority_display }}</td>
+
+                <td>
+                    <form method="post" action="{% url 'tickets:ticket_update_status' ticket.id %}">
+                        {% csrf_token %}
+                        <select name="status"
+                                onchange="this.form.submit()"
+                                class="status-select status-{{ ticket.status }}">
+                            <option value="open" {% if ticket.status == "open" %}selected{% endif %}>Open</option>
+                            <option value="under_investigation" {% if ticket.status == "under_investigation" %}selected{% endif %}>Under Investigation</option>
+                            <option value="on_hold" {% if ticket.status == "on_hold" %}selected{% endif %}>On Hold</option>
+                            <option value="in_progress" {% if ticket.status == "in_progress" %}selected{% endif %}>In Progress</option>
+                            <option value="closed" {% if ticket.status == "closed" %}selected{% endif %}>Closed</option>
+                        </select>
+                    </form>
+                </td>
+
+                <td>{{ ticket.created_at|date:"Y-m-d H:i" }}</td>
+
+                <td>{{ ticket.resolution|default:"—"|truncatechars:30 }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7">No tickets found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}

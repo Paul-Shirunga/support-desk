@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Support Desk</title>
+</head>
+<body>
+    <h1>Support Desk</h1>
+    <p>System is running successfully ✅</p>
+
+    <hr>
+
+    <h2>Tickets</h2>
+
+    {% if tickets %}
+        <ul>
+            {% for ticket in tickets %}
+                <li>
+    <a href="{% url 'ticket_detail' ticket.id %}">
+        <strong>{{ ticket.title }}</strong>
+    </a>
+    — Status: {{ ticket.get_status_display }}
+    — Priority: {{ ticket.get_priority_display }}
+</li>
+
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tickets yet.</p>
+    {% endif %}
+</body>
+</html>

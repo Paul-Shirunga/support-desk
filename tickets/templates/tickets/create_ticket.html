@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* ---------------------------------------------- */
+/* INSURANCEZONE PREMIUM GRADIENT BACKGROUND */
+/* ---------------------------------------------- */
+.content {
+    background: linear-gradient(135deg, #ff7a1c 0%, #ff6a12 20%, #004b8d 70%, #0062b1 100%);
+    min-height: 92vh;
+    padding: 50px;
+}
+
+
+/* ---------------------------------------------- */
+/* MAIN GLASS FORM CARD */
+/* ---------------------------------------------- */
+.form-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-radius: 28px;
+    padding: 50px 55px;
+    max-width: 900px;
+    margin: auto;
+
+    /* Floating premium shadow */
+    box-shadow:
+        0 12px 28px rgba(0,0,0,0.45),
+        0 18px 60px rgba(0,0,0,0.35),
+        0 0 25px rgba(255,255,255,0.15);
+
+    animation: fadeIn 1s ease, floatCard 6s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes floatCard {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ---------------------------------------------- */
+/* TITLE */
+/* ---------------------------------------------- */
+.form-title {
+    color: white;
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 30px;
+    text-shadow: 0 5px 12px rgba(0,0,0,0.45);
+}
+
+
+
+/* ---------------------------------------------- */
+/* FORM LABELS + ICONS */
+/* ---------------------------------------------- */
+.form-card label {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-card label i {
+    font-size: 18px;
+    color: #ffd7b3;
+}
+
+
+
+/* ---------------------------------------------- */
+/* INPUT FIELDS */
+/* ---------------------------------------------- */
+.form-card input,
+.form-card select,
+.form-card textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    outline: none;
+    margin-bottom: 22px;
+    font-size: 15px;
+
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(6px);
+
+    transition: 0.25s ease;
+}
+
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+    background: rgba(255,255,255,0.22);
+    box-shadow: 0 0 12px rgba(255,255,255,0.35);
+}
+
+.form-card textarea {
+    height: 140px;
+    resize: vertical;
+}
+
+
+
+/* ---------------------------------------------- */
+/* SUBMIT BUTTON */
+/* ---------------------------------------------- */
+.submit-btn {
+    background: linear-gradient(135deg, #ff7a1c, #ff9c45);
+    color: white;
+    padding: 15px 28px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+
+    box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+    transition: 0.25s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.45);
+}
+
+</style>
+
+
+
+<!-- ---------------------------------------------- -->
+<!-- FORM CARD CONTENT -->
+<!-- ---------------------------------------------- -->
+<div class="form-card">
+
+    <div class="form-title">Create New Ticket</div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label><i class="bi bi-card-text"></i> Subject</label>
+                <input type="text" name="subject" placeholder="Enter ticket subject..." required>
+
+        <label><i class="bi bi-chat-left-text"></i> Description</label>
+        <textarea name="description" placeholder="Describe the issue..." required></textarea>
+
+        <label><i class="bi bi-lightning-charge-fill"></i> Priority</label>
+        <select name="priority" required>
+            <option value="">Select Priority</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+        </select>
+
+        <label><i class="bi bi-person-gear"></i> Assigned To (Technician)</label>
+        <select name="assigned_to">
+            <option value="">Select Technician</option>
+            {% for tech in technicians %}
+                <option value="{{ tech.id }}">{{ tech.username }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="submit-btn">Submit Ticket</button>
+
+    </form>
+
+</div>
+
+{% endblock %}
