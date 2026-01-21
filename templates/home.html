@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block sidebar_active %}0px{% endblock sidebar_active %}
+
+{% block content %}
+
+<style>
+    /* Background Fade */
+    body {
+        background: url("{% static 'bg_full.png' %}") no-repeat center center fixed !important;
+        background-size: cover !important;
+        animation: bgFadeIn 1.5s ease-in-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes bgFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Slim floating glass card */
+    .welcome-card {
+        animation: cardFade 1.2s ease-out forwards, float 6s ease-in-out infinite;
+        opacity: 0;
+        transform: translateY(20px);
+
+        max-width: 750px;       /* Slim width */
+        margin: 200px auto 0;   /* Move slightly up */
+        padding: 35px 30px;     /* Slim height */
+
+        background: rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-radius: 20px;
+        box-shadow: 0 8px 28px rgba(255,255,255,0.92);
+        text-align: center;
+    }
+
+    @keyframes cardFade {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(8px); }
+    }
+
+    /* Title & subtitle */
+    .welcome-title {
+        font-size: 38px;
+        font-weight: 800;
+        background: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 4px 18px rgba(255,255,255,0.92);
+        margin-bottom: 5px;
+    }
+
+    .welcome-sub {
+        font-size: 18px;
+        color: white;
+        opacity: 0.9;
+        margin-top: 0px;
+    }
+
+    /* Logo styling */
+    .welcome-logo {
+        height: 70px;
+        width: auto;
+        margin-bottom: 10px;
+        filter: drop-shadow(0px 4px 12px rgba(255,255,255,0.85));
+    }
+</style>
+
+<!-- ======================== -->
+<!-- Slim Centered Glass Card -->
+<!-- ======================== -->
+<div class="welcome-card">
+
+    <!-- LOGO -->
+    <img src="{% static 'iz_logo.png' %}" class="welcome-logo">
+
+    <!-- TEXT -->
+    <h1 class="welcome-title">Welcome to Insurance_Zone</h1>
+    <p class="welcome-sub">Ticketing System</p>
+
+</div>
+
+{% endblock %}

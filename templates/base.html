@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Support Desk</title>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        /* GLOBAL HEADER */
+        .top-header {
+            height: 65px;
+            background: #061d3b;
+            color: white;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .iz-logo {
+            height: 42px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #00ff00;
+            border-radius: 50%;
+            margin-right: 6px;
+            display: inline-block;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 240px;
+            background: #0f172a;
+            height: 100vh;
+            position: fixed;
+            top: 65px;
+            left: 0;
+            padding: 20px 15px;
+            transition: 0.35s ease;
+            overflow: hidden;
+            box-shadow: 3px 0 12px rgba(0,0,0,0.25);
+            z-index: 900;
+        }
+
+        #sidebar.hidden {
+            display: none !important;
+        }
+
+        .toggle-btn {
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            padding-left: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            padding: 12px 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: 0.2s ease;
+        }
+
+        .sidebar-link i {
+            font-size: 20px;
+            width: 35px;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .status-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        /* CONTENT AREA */
+        .content {
+            padding: 40px;
+            margin-top: 65px;
+            margin-left: 260px;
+            transition: 0.35s ease;
+            min-height: 100vh;
+        }
+
+        .content.fullscreen {
+            margin-left: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-header">
+    <div class="header-left">
+        <img src="{% static 'iz_logo.png' %}" class="iz-logo">
+        <h2>Support Desk Dashboard</h2>
+    </div>
+
+    <div class="header-right">
+        <span class="status-dot"></span>
+        <span>Online · {{ request.META.REMOTE_ADDR }}</span>
+        <a href="{% url 'tickets:ticket_list' %}" class="header-btn">Tickets</a>
+        <a href="/accounts/logout/" class="header-btn">Logout</a>
+    </div>
+</header>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="{% if not sidebar %}hidden{% endif %}">
+    <div class="toggle-btn" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i>
+    </div>
+
+    <a class="sidebar-link"><i class="bi bi-people-fill"></i>Technicians</a>
+    <a class="sidebar-link"><i class="bi bi-diagram-3-fill"></i>Queues</a>
+    <a class="sidebar-link"><i class="bi bi-ticket"></i>My Tickets</a>
+    <a class="sidebar-link"><i class="bi bi-gear"></i>Service Requests</a>
+    <a class="sidebar-link"><i class="bi bi-exclamation-octagon"></i>Incidents</a>
+
+    <!-- ✅ STATUS COUNTS (REAL DB COUNTS) -->
+    <div class="status-card">
+        <i class="bi bi-folder2-open"></i>
+        <span>Open</span>
+        <span>{{ open_count|default:"0" }}</span>
+    </div>
+
+    <div class="status-card">
+        <i class="bi bi-search"></i>
+        <span>Under Investigation</span>
+        <span>{{ investigation_count|default:"0" }}</span>
+    </div>
+
+    <div class="status-card">
+        <i class="bi bi-pause-circle"></i>
+        <span>On Hold</span>
+        <span>{{ on_hold_count|default:"0" }}</span>
+    </div>
+
+    <div class="status-card">
+        <i class="bi bi-arrow-repeat"></i>
+        <span>In Progress</span>
+        <span>{{ in_progress_count|default:"0" }}</span>
+    </div>
+
+    <div class="status-card">
+        <i class="bi bi-check-circle"></i>
+        <span>Closed</span>
+        <span>{{ closed_count|default:"0" }}</span>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent"
+     class="content {% if not sidebar %}fullscreen{% endif %}">
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("mainContent");
+
+    sidebar.classList.toggle("hidden");
+    content.classList.toggle("fullscreen");
+}
+</script>
+
+</body>
+</html>
